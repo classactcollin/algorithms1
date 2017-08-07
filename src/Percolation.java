@@ -1,6 +1,4 @@
-package percolate; /**
- * Created by colli_000 on 7/21/2017.
- */
+
 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
@@ -12,6 +10,7 @@ public class Percolation {
 
 
     private WeightedQuickUnionUF wquuf;
+    private WeightedQuickUnionUF wquuf_1;
 
     public Percolation(int n){
         if (n <= 0) {
@@ -21,6 +20,7 @@ public class Percolation {
             planeArray = new boolean[((n*n)+1)];
         N=n;
         wquuf =new WeightedQuickUnionUF(n*n+2);
+        wquuf_1 =new WeightedQuickUnionUF(n*n+1);
     }
     public void open(int row, int col){
         if(!isOpen(row,col)) {
@@ -37,10 +37,9 @@ public class Percolation {
             int openNode = getNodeIndex(row, col);
             if (row == 1) {
                 wquuf.union(openNode, 0);
+                wquuf_1.union(openNode, 0);
             }
-            if (row == N) {
-                wquuf.union(openNode, N * N + 1);
-            }
+
 
             int upIndex, leftIndex, rightIndex, downIndex;
             try {
@@ -49,6 +48,7 @@ public class Percolation {
                 if (isOpen(row, col - 1)) {
 
                     wquuf.union(openNode, upIndex);
+                    wquuf_1.union(openNode, upIndex);
                 }
             } catch (IllegalArgumentException e) {
 
@@ -58,6 +58,7 @@ public class Percolation {
                 leftIndex = getNodeIndex(row - 1, col);
                 if (isOpen(row - 1, col)) {
                     wquuf.union(openNode, leftIndex);
+                    wquuf_1.union(openNode, leftIndex);
                 }
             } catch (IllegalArgumentException e) {
 
@@ -67,6 +68,7 @@ public class Percolation {
                 rightIndex = getNodeIndex(row + 1, col);
                 if (isOpen(row + 1, col)) {
                     wquuf.union(openNode, rightIndex);
+                    wquuf_1.union(openNode, rightIndex);
                 }
             } catch (IllegalArgumentException e) {
 
@@ -76,8 +78,15 @@ public class Percolation {
                 downIndex = getNodeIndex(row, col + 1);
                 if (isOpen(row, col + 1)) {
                     wquuf.union(openNode, downIndex);
+                    wquuf_1.union(openNode, downIndex);
                 }
             } catch (IllegalArgumentException e) {
+
+            }
+
+            if (row == N) {
+
+                wquuf.union(openNode, N * N + 1);
 
             }
 
@@ -101,7 +110,7 @@ public class Percolation {
         if (col <= 0 || col > N) {
             throw new IllegalArgumentException("col " + col + " is not between 0 and " + (N-1));
         }
-        return wquuf.connected(0, getNodeIndex(row,col));}
+        return wquuf_1.connected(0, getNodeIndex(row,col));}
     public     int numberOfOpenSites(){
         int openCount=0;
         for(boolean bool:planeArray){
@@ -133,35 +142,22 @@ public class Percolation {
         int n =6;
 
         Percolation perk = new Percolation(n);
-        int count= 1;
-        while(count<=n*n){
-            System.out.print(count);
-
-            if(count%n==0){
-                System.out.println();
-            }
-            count++;
-        }
-
-        int row;
-        int col;
-        while (perk.percolates()==false){
-            row= StdRandom.uniform(n)+1;
-            col=StdRandom.uniform(n)+1;
-            System.out.println("Opening "+row+ " "+col);
-            perk.open(row,col);
-            perk.isFull(row,col);
-            System.out.println("PERK?: "+perk.percolates());
-        }
-
-        for(int x=1;x<=n;x++){
-            for(int y=1;y<=n;y++){
-                System.out.print("x: "+ x + " y: "+y +" = ");
-                System.out.print(perk.getNodeIndex(x,y)+" ");
-            }
-            System.out.println();
+        for(int i=1;i<=6;i++) {
+            perk.open(i, 1);
+            System.out.println("Perk?: "+ perk.percolates());
 
         }
+        System.out.println("Is 6,6 full?: "+ perk.isFull(6,6));
+        perk.open(6,6);
+        System.out.println("Is 6,6 full?: "+ perk.isFull(6,6));
+
+        for(int i=1;i<=5;i++) {
+            perk.open(i, 6);
+            System.out.println("Perk?: "+ perk.percolates());
+
+        }
+        System.out.println("Is 6,6 full?: "+ perk.isFull(6,6));
+
 
 
 

@@ -1,13 +1,15 @@
-package percolate;
 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
+
 
 
 public class PercolationStats {
     private double[] arrayOut;
     private int totalSpots;
     private int totalTrials;
+    private double mean;
+    private double stddev;
     public PercolationStats(int n, int trials){
         arrayOut = new double[trials];
         totalSpots=n*n;
@@ -15,6 +17,7 @@ public class PercolationStats {
         totalTrials = trials;
         int row;
         int col;
+
         while(trial < trials) {
             Percolation perk = new Percolation(n);
 
@@ -27,23 +30,25 @@ public class PercolationStats {
             arrayOut[trial] = (double) perk.numberOfOpenSites()/totalSpots;
             trial++;
         }
+        mean = StdStats.mean(arrayOut);
+        stddev= StdStats.stddev(arrayOut);
 
     }
     public double mean(){
-        return StdStats.mean(arrayOut);
+        return mean;
 
 
     }
     public double stddev(){
-        return StdStats.stddev(arrayOut);
+        return stddev;
     }
     public double confidenceLo(){
 
-        return mean()-1.96*stddev()/Math.sqrt(totalTrials);
+        return mean-1.96*stddev/Math.sqrt(totalTrials);
 
     }
     public double confidenceHi(){
-        return mean()+1.96*stddev()/Math.sqrt(totalTrials);
+        return mean+1.96*stddev/Math.sqrt(totalTrials);
     }
 
     public static void main(String[] args){
